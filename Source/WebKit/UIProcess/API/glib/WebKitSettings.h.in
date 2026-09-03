@@ -107,6 +107,11 @@ typedef enum {
     WEBKIT_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY_DISABLED
 } WebKitNavigatorWebDriverActivePolicy;
 
+#define WEBKIT_TYPE_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY (webkit_navigator_webdriver_active_policy_get_type ())
+
+WEBKIT_API GType
+webkit_navigator_webdriver_active_policy_get_type (void);
+
 WEBKIT_API WebKitSettings *
 webkit_settings_new                                            (void);
 
