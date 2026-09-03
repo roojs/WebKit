@@ -91,6 +91,22 @@ typedef enum {
 } WebKitHardwareAccelerationPolicy;
 #endif
 
+/**
+ * WebKitNavigatorWebDriverActivePolicy:
+ * @WEBKIT_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY_AUTO: Expose %TRUE for %navigator.webdriver when the view is automation-controlled.
+ * @WEBKIT_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY_ENABLED: Always expose %TRUE for %navigator.webdriver.
+ * @WEBKIT_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY_DISABLED: Always expose %FALSE for %navigator.webdriver, even on automation-controlled views.
+ *
+ * Enum values used to control whether page JavaScript sees W3C %navigator.webdriver.
+ *
+ * Since: 2.52
+ */
+typedef enum {
+    WEBKIT_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY_AUTO,
+    WEBKIT_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY_ENABLED,
+    WEBKIT_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY_DISABLED
+} WebKitNavigatorWebDriverActivePolicy;
+
 WEBKIT_API WebKitSettings *
 webkit_settings_new                                            (void);
 
@@ -512,6 +528,13 @@ webkit_settings_get_enable_back_forward_navigation_gestures    (WebKitSettings *
 WEBKIT_API void
 webkit_settings_set_enable_back_forward_navigation_gestures    (WebKitSettings *settings,
                                                                 gboolean        enabled);
+
+WEBKIT_API WebKitNavigatorWebDriverActivePolicy
+webkit_settings_get_navigator_webdriver_active_policy               (WebKitSettings *settings);
+
+WEBKIT_API void
+webkit_settings_set_navigator_webdriver_active_policy               (WebKitSettings *settings,
+                                                                WebKitNavigatorWebDriverActivePolicy policy);
 
 WEBKIT_API guint32
 webkit_settings_font_size_to_points                            (guint32 pixels);
