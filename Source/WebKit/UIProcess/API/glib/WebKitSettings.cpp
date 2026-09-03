@@ -369,9 +369,6 @@ ALLOW_DEPRECATED_DECLARATIONS_BEGIN
         webkit_settings_set_enable_accelerated_2d_canvas(settings, g_value_get_boolean(value));
         ALLOW_DEPRECATED_DECLARATIONS_END
         break;
-    case PROP_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY:
-        webkit_settings_set_navigator_webdriver_active_policy(settings, static_cast<WebKitNavigatorWebDriverActivePolicy>(g_value_get_enum(value)));
-        break;
 #endif
     case PROP_ENABLE_2D_CANVAS_ACCELERATION:
         webkit_settings_set_enable_2d_canvas_acceleration(settings, g_value_get_boolean(value));
@@ -412,6 +409,9 @@ ALLOW_DEPRECATED_DECLARATIONS_BEGIN
         break;
     case PROP_ENABLE_BACK_FORWARD_NAVIGATION_GESTURES:
         webkit_settings_set_enable_back_forward_navigation_gestures(settings, g_value_get_boolean(value));
+        break;
+    case PROP_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY:
+        webkit_settings_set_navigator_webdriver_active_policy(settings, static_cast<WebKitNavigatorWebDriverActivePolicy>(g_value_get_enum(value)));
         break;
 #endif
     case PROP_ENABLE_JAVASCRIPT_MARKUP:
