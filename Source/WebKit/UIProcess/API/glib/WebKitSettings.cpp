@@ -4044,8 +4044,26 @@ WebKitNavigatorWebDriverActivePolicy webkit_settings_get_navigator_webdriver_act
     g_return_val_if_fail(WEBKIT_IS_SETTINGS(settings), WEBKIT_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY_AUTO);
 
     WebKitSettingsPrivate* priv = settings->priv;
-    return static_cast<WebKitNavigatorWebDriverActivePolicy>(priv->preferences->navigatorWebDriverActivePolicy());
+    return static_cast<WebKitNavigatorWebDriverActivePolicy>(static_cast<WebCore::NavigatorWebDriverActivePolicy>(priv->preferences->navigatorWebDriverActivePolicy()));
 }
+
+#if PLATFORM(GTK)
+GType webkit_navigator_webdriver_active_policy_get_type()
+{
+    static GType type = 0;
+    if (G_UNLIKELY(!type)) {
+        static const GEnumValue values[] = {
+            { WEBKIT_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY_AUTO, "WEBKIT_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY_AUTO", "auto" },
+            { WEBKIT_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY_ENABLED, "WEBKIT_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY_ENABLED", "enabled" },
+            { WEBKIT_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY_DISABLED, "WEBKIT_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY_DISABLED", "disabled" },
+            { 0, nullptr, nullptr }
+        };
+        type = g_enum_register_static("WebKitNavigatorWebDriverActivePolicy", values);
+    }
+    return type;
+}
+#endif
+
 
 /**
  * webkit_settings_set_navigator_webdriver_active_policy:
@@ -4062,10 +4080,10 @@ void webkit_settings_set_navigator_webdriver_active_policy(WebKitSettings* setti
 
     WebKitSettingsPrivate* priv = settings->priv;
     auto webCorePolicy = static_cast<WebCore::NavigatorWebDriverActivePolicy>(policy);
-    if (priv->preferences->navigatorWebDriverActivePolicy() == webCorePolicy)
+    if (static_cast<WebCore::NavigatorWebDriverActivePolicy>(priv->preferences->navigatorWebDriverActivePolicy()) == webCorePolicy)
         return;
 
-    priv->preferences->setNavigatorWebDriverActivePolicy(webCorePolicy);
+    priv->preferences->setNavigatorWebDriverActivePolicy(static_cast<uint32_t>(webCorePolicy));
     g_object_notify_by_pspec(G_OBJECT(settings), sObjProperties[PROP_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY]);
 }
 
