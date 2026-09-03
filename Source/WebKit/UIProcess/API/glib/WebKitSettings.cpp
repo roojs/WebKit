@@ -38,6 +38,7 @@
 #include "WebPageProxy.h"
 #include "WebPreferences.h"
 #include <WebCore/HTTPParsers.h>
+#include <WebCore/NavigatorWebDriverActivePolicy.h>
 #include <WebCore/PlatformScreen.h>
 #include <WebCore/UserAgent.h>
 #include <cmath>
@@ -184,6 +185,7 @@ enum {
     PROP_ALLOW_TOP_NAVIGATION_TO_DATA_URLS,
 #if PLATFORM(GTK)
     PROP_HARDWARE_ACCELERATION_POLICY,
+    PROP_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY,
     PROP_ENABLE_BACK_FORWARD_NAVIGATION_GESTURES,
 #endif
     PROP_ENABLE_JAVASCRIPT_MARKUP,
@@ -366,6 +368,9 @@ ALLOW_DEPRECATED_DECLARATIONS_BEGIN
         ALLOW_DEPRECATED_DECLARATIONS_BEGIN
         webkit_settings_set_enable_accelerated_2d_canvas(settings, g_value_get_boolean(value));
         ALLOW_DEPRECATED_DECLARATIONS_END
+        break;
+    case PROP_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY:
+        webkit_settings_set_navigator_webdriver_active_policy(settings, static_cast<WebKitNavigatorWebDriverActivePolicy>(g_value_get_enum(value)));
         break;
 #endif
     case PROP_ENABLE_2D_CANVAS_ACCELERATION:
@@ -624,6 +629,9 @@ ALLOW_DEPRECATED_DECLARATIONS_BEGIN
         break;
     case PROP_ENABLE_BACK_FORWARD_NAVIGATION_GESTURES:
         g_value_set_boolean(value, webkit_settings_get_enable_back_forward_navigation_gestures(settings));
+        break;
+    case PROP_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY:
+        g_value_set_enum(value, webkit_settings_get_navigator_webdriver_active_policy(settings));
         break;
 #endif
     case PROP_ENABLE_JAVASCRIPT_MARKUP:
@@ -1604,7 +1612,24 @@ static void webkit_settings_class_init(WebKitSettingsClass* klass)
             WEBKIT_TYPE_HARDWARE_ACCELERATION_POLICY,
             WEBKIT_HARDWARE_ACCELERATION_POLICY_ALWAYS,
             readWriteConstructParamFlags);
-
+    
+    /**
+     * WebKitSettings:navigator-webdriver-active-policy:
+     *
+     * The #WebKitNavigatorWebDriverActivePolicy controlling whether page JavaScript
+     * sees W3C %navigator.webdriver as %TRUE on automation-controlled views.
+     *
+     * Since: 2.52
+     */
+    sObjProperties[PROP_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY] =
+        g_param_spec_enum(
+            "navigator-webdriver-active-policy",
+            _("Navigator WebDriver Active Policy"),
+            _("Policy controlling navigator.webdriver exposure to page JavaScript"),
+            WEBKIT_TYPE_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY,
+            WEBKIT_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY_AUTO,
+            readWriteConstructParamFlags);
+    
     /**
      * WebKitSettings:enable-back-forward-navigation-gestures:
      *
@@ -4003,6 +4028,45 @@ void webkit_settings_set_enable_back_forward_navigation_gestures(WebKitSettings*
 
     priv->enableBackForwardNavigationGestures = enabled;
     g_object_notify_by_pspec(G_OBJECT(settings), sObjProperties[PROP_ENABLE_BACK_FORWARD_NAVIGATION_GESTURES]);
+}
+/**
+ * webkit_settings_get_navigator_webdriver_active_policy:
+ * @settings: a #WebKitSettings
+ *
+ * Get the #WebKitSettings:navigator-webdriver-active-policy property.
+ *
+ * Return: a #WebKitNavigatorWebDriverActivePolicy
+ *
+ * Since: 2.52
+ */
+WebKitNavigatorWebDriverActivePolicy webkit_settings_get_navigator_webdriver_active_policy(WebKitSettings* settings)
+{
+    g_return_val_if_fail(WEBKIT_IS_SETTINGS(settings), WEBKIT_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY_AUTO);
+
+    WebKitSettingsPrivate* priv = settings->priv;
+    return static_cast<WebKitNavigatorWebDriverActivePolicy>(priv->preferences->navigatorWebDriverActivePolicy());
+}
+
+/**
+ * webkit_settings_set_navigator_webdriver_active_policy:
+ * @settings: a #WebKitSettings
+ * @policy: a #WebKitNavigatorWebDriverActivePolicy
+ *
+ * Set the #WebKitSettings:navigator-webdriver-active-policy property.
+ *
+ * Since: 2.52
+ */
+void webkit_settings_set_navigator_webdriver_active_policy(WebKitSettings* settings, WebKitNavigatorWebDriverActivePolicy policy)
+{
+    g_return_if_fail(WEBKIT_IS_SETTINGS(settings));
+
+    WebKitSettingsPrivate* priv = settings->priv;
+    auto webCorePolicy = static_cast<WebCore::NavigatorWebDriverActivePolicy>(policy);
+    if (priv->preferences->navigatorWebDriverActivePolicy() == webCorePolicy)
+        return;
+
+    priv->preferences->setNavigatorWebDriverActivePolicy(webCorePolicy);
+    g_object_notify_by_pspec(G_OBJECT(settings), sObjProperties[PROP_NAVIGATOR_WEBDRIVER_ACTIVE_POLICY]);
 }
 
 /**
