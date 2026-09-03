@@ -529,6 +529,13 @@ WEBKIT_API void
 webkit_settings_set_enable_back_forward_navigation_gestures    (WebKitSettings *settings,
                                                                 gboolean        enabled);
 
+WEBKIT_API WebKitNavigatorWebDriverActivePolicy
+webkit_settings_get_navigator_webdriver_active_policy               (WebKitSettings *settings);
+
+WEBKIT_API void
+webkit_settings_set_navigator_webdriver_active_policy               (WebKitSettings *settings,
+                                                                WebKitNavigatorWebDriverActivePolicy policy);
+
 WEBKIT_API guint32
 webkit_settings_font_size_to_points                            (guint32 pixels);
 
